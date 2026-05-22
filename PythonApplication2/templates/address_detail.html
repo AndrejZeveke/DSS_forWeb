@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ addr.title }}{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ addr.title }}</li>
+    </ol>
+</nav>
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">{{ addr.title }}</h2>
+        <h6 class="card-subtitle mb-2 text-muted">Категория: {{ addr.category }}</h6>
+        <p class="card-text">{{ addr.description }}</p>
+        <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item">
+                <strong>URL сервиса:</strong>
+                <a href="{{ addr.url }}" target="_blank">{{ addr.url }}</a>
+                <span class="text-muted">(откроется в новом окне)</span>
+            </li>
+            <li class="list-group-item">
+                <strong>Ключевые слова:</strong>
+                {{ addr.keywords | join(', ') }}
+            </li>
+        </ul>
+        <a href="/" class="btn btn-primary">Назад к поиску</a>
+    </div>
+</div>
+{% endblock %}

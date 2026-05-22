@@ -95,6 +95,23 @@ class NeuralTextProcessor:
             features = self.model(input_tensor)
         
         return features.cpu().numpy().flatten()
+
+    #Дополнение для интенции на отчетность
+    def encode_batch(self, texts: List[str]) -> np.ndarray:
+        """Возвращает матрицу признаков (n_samples, output_dim) для списка текстов."""
+        self.model.eval()
+        features_list = []
+        for text in texts:
+            indices = [self.word2idx.get(word, 1) for word in text.lower().split()]
+            if len(indices) > 100:
+                indices = indices[:100]
+            else:
+                indices = indices + [0] * (100 - len(indices))
+            input_tensor = torch.tensor([indices], dtype=torch.long).to(self.device)
+            with torch.no_grad():
+                feat = self.model(input_tensor)
+            features_list.append(feat.cpu().numpy().flatten())
+        return np.array(features_list)
     
     def save(self, path: str):
         """Сохранение модели"""
@@ -105,13 +122,23 @@ class NeuralTextProcessor:
         print(f"💾 Модель сохранена в {path}")
     
     def load(self, path: str):
-        """Загрузка модели"""
-        self.model = SimpleTextNN(self.vocab_size, self.embedding_dim, self.hidden_dim, self.output_dim)
-        self.model.load_state_dict(torch.load(f"{path}/model.pth", map_location=self.device))
-        self.model.to(self.device)
+        """Загрузка модели и словаря"""
+        # Сначала загружаем словарь, чтобы узнать vocab_size
         with open(f"{path}/vocab.pkl", 'rb') as f:
             data = pickle.load(f)
             self.word2idx = data['word2idx']
             self.idx2word = data['idx2word']
             self.vocab_size = data['vocab_size']
-        print(f"📥 Модель загружена из {path}")
+    
+        # Теперь создаём модель с правильным vocab_size
+        self.model = SimpleTextNN(
+            self.vocab_size, 
+            self.embedding_dim, 
+            self.hidden_dim, 
+            self.output_dim
+        )
+        self.model.load_state_dict(
+            torch.load(f"{path}/model.pth", map_location=self.device)
+        )
+        self.model.to(self.device)
+        print(f"📥 Модель загружена из {path}, размер словаря: {self.vocab_size}")
