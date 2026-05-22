@@ -1,2 +1,2 @@
-# PythonApplication1
+# PythonApplication2
 Разработка СППР с искусственным интеллектом для веб-сервиса
