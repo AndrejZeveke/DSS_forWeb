@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Отчёт по КПЭ{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item active">Отчёт по КПЭ</li>
+    </ol>
+</nav>
+<h2>Отчёт по ключевым показателям за последние {{ period }} дней</h2>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Показатель</th>
+            <th>Значение</th>
+            <th>План</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td>{{ row['date'] }}</td>
+            <td>{{ row['metric'] }}</td>
+            <td>{{ row['value'] }}</td>
+            <td>{{ row['target'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="/" class="btn btn-primary">Новый поиск</a>
+{% endblock %}

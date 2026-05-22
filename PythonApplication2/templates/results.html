@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Результаты поиска: {{ data.query }}{% endblock %}
+{% block content %}
+
+<h2>Результаты по запросу: &laquo;{{ data.query }}&raquo;</h2>
+
+<!-- Блок анализа запроса -->
+<div class="card mb-4">
+    <div class="card-header">📊 Анализ запроса</div>
+    <div class="card-body">
+        <p><strong>Токены:</strong> {{ data.query_analysis.tokens | join(', ') }}</p>
+        <p>
+            <strong>Части речи:</strong>
+            {% for token, pos in data.query_analysis.pos_tags %}
+            <em>{{ token }}</em> ({{ pos }}){% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        <p><strong>Именные конструкции:</strong> {{ data.query_analysis.noun_chunks | join(', ') }}</p>
+        <p><strong>Ключевые термины:</strong> {{ data.query_analysis.key_terms | join(', ') }}</p>
+    </div>
+</div>
+
+{% if data.results %}
+<div class="list-group">
+    {% for item in data.results %}
+    <a href="{{ url_for(item.endpoint) }}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ item.rank }}. {{ item.title }}</h5>
+            <small>Релевантность: {{ item.relevance_percent }}%</small>
+        </div>
+        <p class="mb-1">{{ item.description }}</p>
+        <small class="text-muted">Категория: {{ item.category }}</small>
+        <div class="mt-2">
+            <span class="badge bg-secondary">🧠 Нейросетевое сходство: {{ "%.3f"|format(item.cosine_sim) }}</span>
+            <span class="badge bg-success">🔑 Ключевые слова: +{{ "%.2f"|format(item.keyword_bonus) }}</span>
+            <span class="badge bg-info">🏷️ Категория: +{{ "%.2f"|format(item.category_bonus) }}</span>
+            <span class="badge bg-warning">📌 Важные слова: +{{ "%.2f"|format(item.pos_bonus) }}</span>
+        </div>
+        {% if item.matched_keywords %}
+        <div class="mt-1">
+            <small>✅ Совпавшие ключевые слова: {{ item.matched_keywords | join(', ') }}</small>
+        </div>
+        {% endif %}
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-warning mt-3">Ничего не найдено. Попробуйте изменить запрос.</div>
+{% endif %}
+
+<a href="/" class="btn btn-outline-secondary mt-3">&larr; Новый поиск</a>
+{% endblock %}

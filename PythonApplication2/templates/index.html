@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Главная – поиск{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <h1 class="text-center mb-4">Поиск сервисов ГСД</h1>
+        <form action="/search" method="get" class="input-group mb-3">
+            <input type="text" name="q" class="form-control form-control-lg"
+                   placeholder="Введите ваш запрос..." required>
+            <button type="submit" class="btn btn-primary btn-lg">Найти</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
